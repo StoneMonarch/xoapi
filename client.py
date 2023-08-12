@@ -24,7 +24,7 @@ class Client:
         username = config.Username
         password = config.Password
 
-        signinPayload = Template('''{
+        signin_payload = Template('''{
                 "method": "session.signInWithPassword",
                 "params": {
                     "email": "$username",
@@ -34,7 +34,7 @@ class Client:
                 "jsonrpc": "2.0"
             }''')
 
-        tokenPayload = Template('''{
+        token_payload = Template('''{
                         "method": "token.create",
                         "params": {},
                         "id": $callID,
@@ -44,9 +44,9 @@ class Client:
         self.ws = websocket.WebSocket()
         # websocket.enableTrace(True)
         self.ws.connect(f'ws://{url}/api/')
-        self.ws.send(signinPayload.substitute({'username': username, 'password': password, 'callID': time.time_ns()}))
+        self.ws.send(signin_payload.substitute({'username': username, 'password': password, 'callID': time.time_ns()}))
         print(self.ws.recv())
-        self.ws.send(tokenPayload.substitute({'callID': time.time_ns()}))
+        self.ws.send(token_payload.substitute({'callID': time.time_ns()}))
         t = self.ws.recv()
         token = json.loads(t)
         self.http_url = f'http://{url}/rest/v0'
