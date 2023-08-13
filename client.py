@@ -90,7 +90,7 @@ class Client:
         r = r.json()
         return Host(r['hostname'], r['name_description'], r['name_label'], r['memory'], r['power_state'], r['residentVms'], r['rebootRequired'], r['tags'], r['uuid'], r['$pool'])
 
-    def get_hosts(self):
+    def get_hosts(self) -> list[Host]:
         r = requests.get(f'{self.http_url}/hosts?fields=hostname,name_description,name_label,memory,power_state,residentVms,rebootRequired,tags,uuid,$pool', cookies=self.http_cookie)
         hosts: list[Host] = []
         for host in r.json():
