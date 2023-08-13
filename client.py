@@ -94,7 +94,7 @@ class Client:
         return StorageRepository(r['physical_usage'], r['name_description'], r['name_label'], r['size'], r['tags'], r['VDIs'], r['$pool'], r['uuid'])
 
     def get_srs(self) -> list[StorageRepository]:
-        r = requests.get((f'{self.http_url}/srs?fields=physical_usage,name_description,name_label,size,tags,VDIs,$pool,uuid'), cookies=self.http_cookie)
+        r = requests.get(f'{self.http_url}/srs?fields=physical_usage,name_description,name_label,size,tags,VDIs,$pool,uuid', cookies=self.http_cookie)
         srs: list[StorageRepository] = []
         for sr in r.json():
             s = StorageRepository(sr['physical_usage'], sr['name_description'], sr['name_label'], sr['size'], sr['tags'], sr['VDIs'], sr['$pool'], sr['uuid'])
@@ -119,4 +119,3 @@ class Client:
                 p = VDI(vdi['name_label'], vdi['name_description'], '', vdi['size'], vdi['tags'], vdi['usage'], vdi['$SR'], vdi['$VBDs'], vdi['$pool'], vdi['uuid'])
             v.append(p)
         return v
-
