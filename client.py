@@ -8,6 +8,7 @@ import requests
 from host import Host
 from pool import Pool
 from sr import StorageRepository
+from vdi import VDI
 from vm import VirtualMachine
 
 
@@ -99,3 +100,17 @@ class Client:
             s = StorageRepository(sr['physical_usage'], sr['name_description'], sr['name_label'], sr['size'], sr['tags'], sr['VDIs'], sr['$pool'], sr['uuid'])
             srs.append(s)
         return srs
+
+    def get_vdi(self, uuid: str) -> VDI:
+        r = requests.get(f'{self.http_url}/vdis/{uuid}', cookies=self.http_cookie)
+        r = r.json()
+        return VDI(r['name_label'], r['name_description'], r['parent'], r['size'], r['tags'], r['usage'], r['$SR'], r['$VBDs'], r['$pool'], r['uuid'])
+
+    def get_vdis(self) -> list[VDI]:
+        r = requests.get(f'{self.http_url}/vdis?fields=name_label,name_description,parent,size,tags,usage,$SR,$VBDs,$pool,uuid', cookies=self.http_cookie)
+        v: list[VDI] = []
+        for vdi in r.json():
+            p = VDI(vdi['name_label'], vdi['name_description'], vdi['parent'], vdi['size'], vdi['tags'], vdi['usage'], vdi['$SR'], vdi['$VBDs'], vdi['$pool'], vdi['uuid'])
+            v.append(p)
+        return v
+
