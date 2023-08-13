@@ -5,6 +5,7 @@ from string import Template
 import websocket
 import requests
 
+from pool import Pool
 from vm import VirtualMachine
 
 
@@ -67,6 +68,19 @@ class Client:
         for vm in r.json():
             m = VirtualMachine(vm['uuid'], vm['name_label'], vm['name_description'], vm['power_state'], vm['tags'], vm['addresses'], vm['$VBDs'], vm['current_operations'], vm['$container'], vm['$pool'])
             v.append(m)
+        return v
+
+    def get_pool(self, uuid: str) -> Pool:
+        r = requests.get(f'{self.http_url}/pools/{uuid}', cookies=self.http_cookie)
+        r = r.json()
+        return Pool(r['HA_enabled'], r['haSrs'], r['master'], r['tags'], r['name_description'], r['name_label'], r['uuid'])
+
+    def get_pools(self) -> list[Pool]:
+        r = requests.get(f'{self.http_url}/pools?fields=HA_enabled,haSrs,master,tags,name_description,name_label,cpus,uuid', cookies=self.http_cookie)
+        v: list[Pool] = []
+        for pool in r.json():
+            p = Pool(pool['HA_enabled'], pool['haSrs'], pool['master'], pool['tags'], pool['name_description'], pool['name_label'], pool['uuid'])
+            v.append(p)
         return v
 
 
