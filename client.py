@@ -7,6 +7,7 @@ import requests
 
 from host import Host
 from pool import Pool
+from sr import StorageRepository
 from vm import VirtualMachine
 
 
@@ -96,3 +97,16 @@ class Client:
             h = Host(host['hostname'], host['name_description'], host['name_label'], host['memory'], host['power_state'], host['residentVms'], host['rebootRequired'], host['tags'], host['uuid'], host['$pool'])
             hosts.append(h)
         return hosts
+
+    def get_sr(self, uuid: str) -> StorageRepository:
+        r = requests.get(f'{self.http_url}/srs/{uuid}', cookies=self.http_cookie)
+        r = r.json()
+        return StorageRepository(r['physical_usage'], r['name_description'], r['name_label'], r['size'], r['tags'], r['VDIs'], r['$pool'], r['uuid'])
+
+    def get_srs(self) -> list[StorageRepository]:
+        r = requests.get((f'{self.http_url}/srs?fields=physical_usage,name_description,name_label,size,tags,VDIs,$pool,uuid'), cookies=self.http_cookie)
+        srs: list[StorageRepository] = []
+        for sr in r.json():
+            s = StorageRepository(sr['physical_usage'], sr['name_description'], sr['name_label'], sr['size'], sr['tags'], sr['VDIs'], sr['$pool'], sr['uuid'])
+            srs.append(s)
+        return srs
