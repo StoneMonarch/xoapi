@@ -96,7 +96,3 @@ class Client:
             h = Host(host['hostname'], host['name_description'], host['name_label'], host['memory'], host['power_state'], host['residentVms'], host['rebootRequired'], host['tags'], host['uuid'], host['$pool'])
             hosts.append(h)
         return hosts
-
-
-if __name__ == "__main__":
-    c = Client(Config('10.10.20.50', 'ha', 'py965hyb'))
