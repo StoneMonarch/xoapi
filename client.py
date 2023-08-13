@@ -11,22 +11,11 @@ from sr import StorageRepository
 from vm import VirtualMachine
 
 
-class Config:
-    def __init__(self, url: str, username: str, password: str):
-        self.Url = url
-        self.Username = username
-        self.Password = password
-
-
 # self.http_url = f'http://{url}/rest/v0'
 # self.http_cookie = {'authenticationToken': token}
 
 class Client:
-    def __init__(self, config: Config):
-        url = config.Url
-        username = config.Username
-        password = config.Password
-
+    def __init__(self, url: str, username: str, password: str):
         signin_payload = Template('''{
                 "method": "session.signInWithPassword",
                 "params": {
