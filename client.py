@@ -5,6 +5,7 @@ from string import Template
 import websocket
 import requests
 
+from host import Host
 from pool import Pool
 from vm import VirtualMachine
 
@@ -82,6 +83,19 @@ class Client:
             p = Pool(pool['HA_enabled'], pool['haSrs'], pool['master'], pool['tags'], pool['name_description'], pool['name_label'], pool['uuid'])
             v.append(p)
         return v
+
+    def get_host(self, uuid: str) -> Host:
+        r = requests.get(f'{self.http_url}/hosts/{uuid}', cookies=self.http_cookie)
+        r = r.json()
+        return Host(r['hostname'], r['name_description'], r['name_label'], r['memory'], r['power_state'], r['residentVms'], r['rebootRequired'], r['tags'], r['uuid'], r['$pool'])
+
+    def get_hosts(self):
+        r = requests.get(f'{self.http_url}/hosts?fields=hostname,name_description,name_label,memory,power_state,residentVms,rebootRequired,tags,uuid,$pool', cookies=self.http_cookie)
+        hosts: list[Host] = []
+        for host in r.json():
+            h = Host(host['hostname'], host['name_description'], host['name_label'], host['memory'], host['power_state'], host['residentVms'], host['rebootRequired'], host['tags'], host['uuid'], host['$pool'])
+            hosts.append(h)
+        return hosts
 
 
 if __name__ == "__main__":
